@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FireIntel API Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: #ff6b35;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: #888;
+            font-size: 1rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: #ff6b35;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card h2::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: #ff6b35;
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #bbb;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #ff6b35;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b35, #e55a2b);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .api-key-container {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .api-key-container input {
+            flex: 1;
+        }
+
+        .toggle-visibility {
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-visibility:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+        }
+
+        .status-error {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+
+        .status-warning {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .response-container {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .response-container pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: #8bc34a;
+        }
+
+        .endpoint-selector {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 0.5rem;
+        }
+
+        .endpoint-selector select {
+            border-radius: 8px 0 0 8px;
+        }
+
+        .endpoint-selector input {
+            border-radius: 0 8px 8px 0;
+        }
+
+        .info-box {
+            background: rgba(255, 107, 53, 0.1);
+            border-left: 4px solid #ff6b35;
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 1rem;
+        }
+
+        .info-box p {
+            font-size: 0.9rem;
+            color: #bbb;
+        }
+
+        .info-box a {
+            color: #ff6b35;
+            text-decoration: none;
+        }
+
+        .info-box a:hover {
+            text-decoration: underline;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-size: 0.875rem;
+        }
+
+        footer a {
+            color: #ff6b35;
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+
+            header h1 {
+                font-size: 1.75rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .endpoint-selector {
+                grid-template-columns: 1fr;
+            }
+
+            .endpoint-selector select,
+            .endpoint-selector input {
+                border-radius: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔥 FireIntel API</h1>
+            <p>Simple interface to interact with FireIntel API</p>
+        </header>
+
+        <!-- API Key Configuration -->
+        <div class="card">
+            <h2>API Key Configuration</h2>
+            <div class="info-box">
+                <p>Enter your FireIntel API key below. Your key is stored locally in your browser and never sent anywhere except to the FireIntel API. Get your API key from <a href="https://fireintel.io" target="_blank" rel="noopener noreferrer">fireintel.io</a>.</p>
+            </div>
+            <div class="form-group">
+                <label for="apiKey">API Key</label>
+                <div class="api-key-container">
+                    <input type="password" id="apiKey" placeholder="Enter your FireIntel API key">
+                    <button class="toggle-visibility" id="toggleApiKey" title="Toggle visibility">👁️</button>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" id="saveApiKey">💾 Save Key</button>
+                <button class="btn btn-secondary" id="testConnection">🔗 Test Connection</button>
+                <button class="btn btn-danger" id="clearApiKey">🗑️ Clear Key</button>
+            </div>
+            <div id="connectionStatus" class="hidden" style="margin-top: 1rem;"></div>
+        </div>
+
+        <!-- Base URL Configuration -->
+        <div class="card">
+            <h2>API Settings</h2>
+            <div class="form-group">
+                <label for="baseUrl">Base URL</label>
+                <input type="text" id="baseUrl" placeholder="https://api.fireintel.io" value="https://api.fireintel.io">
+            </div>
+        </div>
+
+        <!-- API Request Builder -->
+        <div class="card">
+            <h2>Make API Request</h2>
+            <div class="form-group">
+                <label for="method">HTTP Method & Endpoint</label>
+                <div class="endpoint-selector">
+                    <select id="method">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="DELETE">DELETE</option>
+                    </select>
+                    <input type="text" id="endpoint" placeholder="/search?query=example">
+                </div>
+            </div>
+            <div class="form-group" id="requestBodyGroup">
+                <label for="requestBody">Request Body (JSON)</label>
+                <textarea id="requestBody" placeholder='{"query": "example"}'></textarea>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" id="sendRequest">🚀 Send Request</button>
+                <button class="btn btn-secondary" id="clearResponse">🧹 Clear Response</button>
+            </div>
+        </div>
+
+        <!-- Response Display -->
+        <div class="card">
+            <h2>Response</h2>
+            <div id="responseStatus"></div>
+            <div class="response-container" id="responseContainer">
+                <pre id="responseBody">No response yet. Make a request to see results here.</pre>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <h2>Quick Actions</h2>
+            <div class="info-box">
+                <p>Common API endpoints for quick access. Click any button to pre-fill the request builder above.</p>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-secondary quick-action" data-method="GET" data-endpoint="/search" data-body="">🔍 Search</button>
+                <button class="btn btn-secondary quick-action" data-method="GET" data-endpoint="/user" data-body="">👤 User Info</button>
+                <button class="btn btn-secondary quick-action" data-method="GET" data-endpoint="/status" data-body="">📊 Status</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>Built for easy FireIntel API interaction • <a href="https://docs.fireintel.io" target="_blank" rel="noopener noreferrer">View Documentation</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // DOM Elements
+        const elements = {
+            apiKey: document.getElementById('apiKey'),
+            toggleApiKey: document.getElementById('toggleApiKey'),
+            saveApiKey: document.getElementById('saveApiKey'),
+            testConnection: document.getElementById('testConnection'),
+            clearApiKey: document.getElementById('clearApiKey'),
+            connectionStatus: document.getElementById('connectionStatus'),
+            baseUrl: document.getElementById('baseUrl'),
+            method: document.getElementById('method'),
+            endpoint: document.getElementById('endpoint'),
+            requestBody: document.getElementById('requestBody'),
+            requestBodyGroup: document.getElementById('requestBodyGroup'),
+            sendRequest: document.getElementById('sendRequest'),
+            clearResponse: document.getElementById('clearResponse'),
+            responseStatus: document.getElementById('responseStatus'),
+            responseBody: document.getElementById('responseBody'),
+            quickActions: document.querySelectorAll('.quick-action')
+        };
+
+        // Storage keys
+        const STORAGE_KEYS = {
+            API_KEY: 'fireintel_api_key',
+            BASE_URL: 'fireintel_base_url'
+        };
+
+        // Initialize
+        function init() {
+            loadStoredValues();
+            setupEventListeners();
+            updateRequestBodyVisibility();
+        }
+
+        // Load stored values from localStorage
+        function loadStoredValues() {
+            const storedApiKey = localStorage.getItem(STORAGE_KEYS.API_KEY);
+            const storedBaseUrl = localStorage.getItem(STORAGE_KEYS.BASE_URL);
+
+            if (storedApiKey) {
+                elements.apiKey.value = storedApiKey;
+                showStatus(elements.connectionStatus, 'API key loaded from storage', 'warning');
+            }
+
+            if (storedBaseUrl) {
+                elements.baseUrl.value = storedBaseUrl;
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            elements.toggleApiKey.addEventListener('click', toggleApiKeyVisibility);
+            elements.saveApiKey.addEventListener('click', saveApiKey);
+            elements.testConnection.addEventListener('click', testConnection);
+            elements.clearApiKey.addEventListener('click', clearApiKey);
+            elements.method.addEventListener('change', updateRequestBodyVisibility);
+            elements.sendRequest.addEventListener('click', sendRequest);
+            elements.clearResponse.addEventListener('click', clearResponse);
+            elements.baseUrl.addEventListener('change', saveBaseUrl);
+
+            elements.quickActions.forEach(btn => {
+                btn.addEventListener('click', handleQuickAction);
+            });
+        }
+
+        // Toggle API key visibility
+        function toggleApiKeyVisibility() {
+            const isPassword = elements.apiKey.type === 'password';
+            elements.apiKey.type = isPassword ? 'text' : 'password';
+            elements.toggleApiKey.textContent = isPassword ? '🔒' : '👁️';
+        }
+
+        // Save API key
+        function saveApiKey() {
+            const apiKey = elements.apiKey.value.trim();
+            if (!apiKey) {
+                showStatus(elements.connectionStatus, 'Please enter an API key', 'error');
+                return;
+            }
+            localStorage.setItem(STORAGE_KEYS.API_KEY, apiKey);
+            showStatus(elements.connectionStatus, 'API key saved successfully', 'success');
+        }
+
+        // Save base URL
+        function saveBaseUrl() {
+            const baseUrl = elements.baseUrl.value.trim();
+            if (baseUrl) {
+                localStorage.setItem(STORAGE_KEYS.BASE_URL, baseUrl);
+            }
+        }
+
+        // Clear API key
+        function clearApiKey() {
+            elements.apiKey.value = '';
+            localStorage.removeItem(STORAGE_KEYS.API_KEY);
+            showStatus(elements.connectionStatus, 'API key cleared', 'warning');
+        }
+
+        // Test connection
+        async function testConnection() {
+            const apiKey = elements.apiKey.value.trim();
+            if (!apiKey) {
+                showStatus(elements.connectionStatus, 'Please enter an API key first', 'error');
+                return;
+            }
+
+            showStatus(elements.connectionStatus, 'Testing connection...', 'warning');
+            elements.testConnection.disabled = true;
+
+            try {
+                const baseUrl = elements.baseUrl.value.trim();
+                const url = new URL('/status', baseUrl).href;
+                const response = await makeApiRequest(url, 'GET', null, apiKey);
+                
+                if (response.ok) {
+                    showStatus(elements.connectionStatus, 'Connection successful!', 'success');
+                } else {
+                    showStatus(elements.connectionStatus, `Connection failed: ${response.status} ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                showStatus(elements.connectionStatus, `Connection error: ${error.message}`, 'error');
+            } finally {
+                elements.testConnection.disabled = false;
+            }
+        }
+
+        // Update request body visibility based on method
+        function updateRequestBodyVisibility() {
+            const method = elements.method.value;
+            const hideBody = method === 'GET' || method === 'DELETE';
+            elements.requestBodyGroup.classList.toggle('hidden', hideBody);
+        }
+
+        // Send API request
+        async function sendRequest() {
+            const apiKey = elements.apiKey.value.trim();
+            if (!apiKey) {
+                showStatus(elements.responseStatus, 'Please save your API key first', 'error');
+                return;
+            }
+
+            const baseUrl = elements.baseUrl.value.trim();
+            const method = elements.method.value;
+            const endpoint = elements.endpoint.value.trim();
+            const requestBody = elements.requestBody.value.trim();
+
+            if (!endpoint) {
+                showStatus(elements.responseStatus, 'Please enter an endpoint', 'error');
+                return;
+            }
+
+            let body = null;
+            if (requestBody && (method === 'POST' || method === 'PUT')) {
+                try {
+                    body = JSON.parse(requestBody);
+                } catch (e) {
+                    showStatus(elements.responseStatus, 'Invalid JSON in request body', 'error');
+                    return;
+                }
+            }
+
+            elements.sendRequest.disabled = true;
+            elements.sendRequest.innerHTML = '<span class="loading"></span> Sending...';
+            showStatus(elements.responseStatus, 'Sending request...', 'warning');
+
+            try {
+                const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : '/' + endpoint;
+                const url = new URL(normalizedEndpoint, baseUrl).href;
+                const response = await makeApiRequest(url, method, body, apiKey);
+                const responseData = await response.text();
+
+                let formattedResponse;
+                try {
+                    formattedResponse = JSON.stringify(JSON.parse(responseData), null, 2);
+                } catch (e) {
+                    formattedResponse = responseData;
+                }
+
+                elements.responseBody.textContent = formattedResponse || 'Empty response';
+
+                if (response.ok) {
+                    showStatus(elements.responseStatus, `✓ ${response.status} ${response.statusText}`, 'success');
+                } else {
+                    showStatus(elements.responseStatus, `✗ ${response.status} ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                elements.responseBody.textContent = `Error: ${error.message}`;
+                showStatus(elements.responseStatus, `Request failed: ${error.message}`, 'error');
+            } finally {
+                elements.sendRequest.disabled = false;
+                elements.sendRequest.innerHTML = '🚀 Send Request';
+            }
+        }
+
+        // Make API request
+        async function makeApiRequest(url, method, body, apiKey) {
+            const headers = {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            };
+
+            const options = {
+                method,
+                headers,
+                mode: 'cors'
+            };
+
+            if (body && (method === 'POST' || method === 'PUT')) {
+                options.body = JSON.stringify(body);
+            }
+
+            return fetch(url, options);
+        }
+
+        // Clear response
+        function clearResponse() {
+            elements.responseBody.textContent = 'No response yet. Make a request to see results here.';
+            elements.responseStatus.innerHTML = '';
+        }
+
+        // Handle quick action buttons
+        function handleQuickAction(e) {
+            const btn = e.currentTarget;
+            elements.method.value = btn.dataset.method;
+            elements.endpoint.value = btn.dataset.endpoint;
+            elements.requestBody.value = btn.dataset.body;
+            updateRequestBodyVisibility();
+            
+            // Scroll to request builder
+            document.querySelector('.endpoint-selector').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Show status message
+        function showStatus(element, message, type) {
+            element.classList.remove('hidden');
+            element.innerHTML = `
+                <span class="status status-${type}">
+                    <span class="status-dot"></span>
+                    ${message}
+                </span>
+            `;
+        }
+
+        // Initialize on DOM load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
