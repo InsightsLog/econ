@@ -103,12 +103,16 @@ generateMyConfig(options) {
 
 ### Step 3: Test Your Template
 
+After defining your template and implementing the generator functions (as shown above), test it with:
+
 ```bash
 node src/cli.js create mytemplate test-project
 cd test-project
 npm install
 npm start
 ```
+
+Note: Replace 'mytemplate' with the actual template ID you registered in step 1.
 
 ## Template Options
 

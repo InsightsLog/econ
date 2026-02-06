@@ -17,11 +17,13 @@ Vibecoder is a modern project generation tool that uses an agentic workflow appr
 ## Installation
 
 ```bash
-git clone https://github.com/InsightsLog/econ.git
-cd econ
+git clone https://github.com/InsightsLog/econ.git vibecoder
+cd vibecoder
 npm install
 npm link  # Optional: make 'vibecoder' available globally
 ```
+
+Note: The repository is named 'econ' but the project is called 'Vibecoder'.
 
 ## Quick Start
 
