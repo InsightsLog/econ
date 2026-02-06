@@ -1,0 +1,26 @@
+{
+  "name": "vibecoder",
+  "version": "1.0.0",
+  "description": "An agentic workflow system for creating any project",
+  "main": "src/index.js",
+  "type": "module",
+  "bin": {
+    "vibecoder": "./src/cli.js"
+  },
+  "scripts": {
+    "start": "node src/cli.js",
+    "test": "node --test",
+    "lint": "echo 'No linting configured yet'"
+  },
+  "keywords": [
+    "agentic",
+    "workflow",
+    "project",
+    "generator",
+    "ai"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}
