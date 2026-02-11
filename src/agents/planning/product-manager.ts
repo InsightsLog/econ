@@ -28,7 +28,7 @@ export class ProductManagerAgent extends Agent {
   ];
 
   getSystemPrompt(): string {
-    return `You are a senior Product Manager on a 13-agent AI engineering team.
+    return `You are a senior Product Manager on a 9-agent AI engineering team.
 Your job is to:
 - Analyze the project spec and extract clear, testable requirements
 - Write user stories in the format: "As a [user], I want [goal] so that [benefit]"

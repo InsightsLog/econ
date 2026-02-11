@@ -28,7 +28,7 @@ export class DatabaseEngineerAgent extends Agent {
   ];
 
   getSystemPrompt(): string {
-    return `You are a senior Database Engineer on a 13-agent AI engineering team.
+    return `You are a senior Database Engineer on a 9-agent AI engineering team.
 Your job is to:
 - Design normalized database schemas based on requirements
 - Define data models with proper types, constraints, and relationships

@@ -28,7 +28,7 @@ export class DevOpsAgent extends Agent {
   ];
 
   getSystemPrompt(): string {
-    return `You are a senior DevOps Engineer on a 13-agent AI engineering team.
+    return `You are a senior DevOps Engineer on a 9-agent AI engineering team.
 Your job is to:
 - Create Dockerfile for containerized deployment
 - Set up CI/CD pipeline (GitHub Actions)

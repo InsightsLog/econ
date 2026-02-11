@@ -28,7 +28,7 @@ export class QAEngineerAgent extends Agent {
   ];
 
   getSystemPrompt(): string {
-    return `You are a senior QA Engineer on a 13-agent AI engineering team.
+    return `You are a senior QA Engineer on a 9-agent AI engineering team.
 Your job is to:
 - Write unit tests for individual functions and components
 - Write integration tests for API routes and service interactions

@@ -8,16 +8,16 @@ import {
 } from "../../core/types";
 
 /**
- * Agent 5: Frontend Developer
+ * Agent: Frontend Developer
  *
- * Implements the client-side application — React components,
- * pages, routing, state management, and API integration.
+ * Implements the client-side application — design system, React components,
+ * pages, routing, state management, API integration, and accessibility.
  */
 export class FrontendDevAgent extends Agent {
   readonly role = AgentRole.FrontendDev;
   readonly name = "Frontend Developer";
   readonly description =
-    "Builds React components, pages, routing, state management, and API client integration";
+    "Builds design system, React components, pages, routing, state management, API client integration, and accessibility utilities";
   readonly capabilities = [
     "react-components",
     "state-management",
@@ -25,17 +25,31 @@ export class FrontendDevAgent extends Agent {
     "api-integration",
     "responsive-implementation",
     "form-handling",
+    "component-design",
+    "design-tokens",
+    "responsive-layout",
+    "interaction-design",
+    "visual-hierarchy",
+    "wcag-audit",
+    "aria-labels",
+    "keyboard-navigation",
+    "screen-reader-testing",
+    "color-contrast",
+    "focus-management",
   ];
 
   getSystemPrompt(): string {
-    return `You are a senior Frontend Developer on a 13-agent AI engineering team.
+    return `You are a senior Frontend Developer on a 9-agent AI engineering team.
 Your job is to:
-- Implement React components based on the UI Designer's specs
+- Create a coherent design system with tokens for colors, typography, spacing, and breakpoints
+- Design the component hierarchy (atoms, molecules, organisms, templates, pages)
+- Implement React components with proper accessibility (ARIA attributes, keyboard navigation, focus management)
 - Set up client-side routing with React Router
 - Implement state management for global and local state
 - Build API client layer for communicating with the backend
 - Handle forms with validation, error states, and loading states
 - Implement responsive layouts using the design tokens
+- Ensure WCAG 2.1 AA compliance across all components
 - Follow React best practices: hooks, composition, error boundaries`;
   }
 
@@ -43,6 +57,314 @@ Your job is to:
     this.log("Implementing frontend application...");
     const artifacts: Artifact[] = [];
     const projectName = state.spec.name;
+
+    // ── Design System (absorbed from UI Designer) ──────────────────
+
+    // Design tokens
+    const tokens = {
+      colors: {
+        primary: { 50: "#eff6ff", 500: "#3b82f6", 600: "#2563eb", 700: "#1d4ed8", 900: "#1e3a5f" },
+        neutral: { 50: "#f9fafb", 100: "#f3f4f6", 200: "#e5e7eb", 500: "#6b7280", 700: "#374151", 900: "#111827" },
+        success: { 500: "#22c55e", 700: "#15803d" },
+        warning: { 500: "#f59e0b", 700: "#b45309" },
+        error: { 500: "#ef4444", 700: "#b91c1c" },
+      },
+      typography: {
+        fontFamily: { sans: "Inter, system-ui, sans-serif", mono: "JetBrains Mono, monospace" },
+        fontSize: { xs: "0.75rem", sm: "0.875rem", base: "1rem", lg: "1.125rem", xl: "1.25rem", "2xl": "1.5rem", "3xl": "1.875rem", "4xl": "2.25rem" },
+        fontWeight: { normal: 400, medium: 500, semibold: 600, bold: 700 },
+        lineHeight: { tight: 1.25, normal: 1.5, relaxed: 1.75 },
+      },
+      spacing: { xs: "0.25rem", sm: "0.5rem", md: "1rem", lg: "1.5rem", xl: "2rem", "2xl": "3rem", "3xl": "4rem" },
+      breakpoints: { sm: "640px", md: "768px", lg: "1024px", xl: "1280px" },
+      borderRadius: { sm: "0.25rem", md: "0.375rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+      shadows: {
+        sm: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        md: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+        lg: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+      },
+    };
+
+    artifacts.push(
+      this.createArtifact(
+        ArtifactType.Design,
+        "src/client/styles/design-tokens.json",
+        JSON.stringify(tokens, null, 2),
+        "Design token system with colors, typography, spacing, and breakpoints"
+      )
+    );
+
+    // Component hierarchy
+    const components = {
+      atoms: [
+        { name: "Button", variants: ["primary", "secondary", "ghost", "danger"], props: ["size", "disabled", "loading"] },
+        { name: "Input", variants: ["text", "email", "password", "search"], props: ["label", "error", "placeholder"] },
+        { name: "Badge", variants: ["default", "success", "warning", "error"], props: ["label"] },
+        { name: "Avatar", variants: ["image", "initials", "icon"], props: ["src", "name", "size"] },
+        { name: "Spinner", variants: ["sm", "md", "lg"], props: ["color"] },
+        { name: "Icon", variants: [], props: ["name", "size", "color"] },
+      ],
+      molecules: [
+        { name: "FormField", composition: ["Input", "Label", "ErrorMessage"] },
+        { name: "SearchBar", composition: ["Input", "Button", "Icon"] },
+        { name: "Card", composition: ["CardHeader", "CardBody", "CardFooter"] },
+        { name: "NavItem", composition: ["Icon", "Text", "Badge"] },
+        { name: "Toast", composition: ["Icon", "Text", "Button"] },
+        { name: "DropdownMenu", composition: ["Button", "MenuList", "MenuItem"] },
+      ],
+      organisms: [
+        { name: "Navbar", composition: ["Logo", "NavItem[]", "Avatar", "DropdownMenu"] },
+        { name: "Sidebar", composition: ["NavItem[]", "UserProfile"] },
+        { name: "DataTable", composition: ["TableHeader", "TableRow[]", "Pagination"] },
+        { name: "Form", composition: ["FormField[]", "Button"] },
+        { name: "Modal", composition: ["ModalHeader", "ModalBody", "ModalFooter"] },
+      ],
+      templates: [
+        { name: "DashboardLayout", sections: ["Navbar", "Sidebar", "MainContent", "Footer"] },
+        { name: "AuthLayout", sections: ["Logo", "Form", "Footer"] },
+        { name: "SettingsLayout", sections: ["Navbar", "SettingsSidebar", "SettingsContent"] },
+      ],
+    };
+
+    artifacts.push(
+      this.createArtifact(
+        ArtifactType.Design,
+        "docs/component-hierarchy.json",
+        JSON.stringify(components, null, 2),
+        "Component hierarchy following atomic design principles"
+      )
+    );
+
+    // Global CSS reset / base styles
+    const globalCss = `/* Global Styles — generated by Frontend Developer Agent */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  color: #111827;
+  background-color: #f9fafb;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Focus visible for accessibility */
+:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Screen-reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+`;
+
+    artifacts.push(
+      this.createArtifact(
+        ArtifactType.SourceCode,
+        "src/client/styles/global.css",
+        globalCss,
+        "Global CSS reset and base styles with accessibility considerations"
+      )
+    );
+
+    // ── Accessibility Utilities (absorbed from Accessibility Specialist) ──
+
+    // A11y audit checklist
+    const auditChecklist = {
+      categories: [
+        {
+          name: "Perceivable",
+          checks: [
+            { rule: "All images have descriptive alt text", status: "required", wcag: "1.1.1" },
+            { rule: "Color is not the sole means of conveying information", status: "required", wcag: "1.4.1" },
+            { rule: "Text contrast ratio is at least 4.5:1", status: "required", wcag: "1.4.3" },
+            { rule: "Content can be resized to 200% without loss", status: "required", wcag: "1.4.4" },
+            { rule: "Non-text contrast ratio is at least 3:1", status: "required", wcag: "1.4.11" },
+          ],
+        },
+        {
+          name: "Operable",
+          checks: [
+            { rule: "All functionality available via keyboard", status: "required", wcag: "2.1.1" },
+            { rule: "No keyboard traps", status: "required", wcag: "2.1.2" },
+            { rule: "Focus order is logical and intuitive", status: "required", wcag: "2.4.3" },
+            { rule: "Focus is visible on all interactive elements", status: "required", wcag: "2.4.7" },
+            { rule: "Skip navigation link is present", status: "required", wcag: "2.4.1" },
+            { rule: "Page titles are descriptive", status: "required", wcag: "2.4.2" },
+          ],
+        },
+        {
+          name: "Understandable",
+          checks: [
+            { rule: "Page language is declared in HTML", status: "required", wcag: "3.1.1" },
+            { rule: "Form inputs have associated labels", status: "required", wcag: "3.3.2" },
+            { rule: "Error messages identify the field and suggest fix", status: "required", wcag: "3.3.3" },
+            { rule: "Navigation is consistent across pages", status: "required", wcag: "3.2.3" },
+          ],
+        },
+        {
+          name: "Robust",
+          checks: [
+            { rule: "HTML validates without errors", status: "required", wcag: "4.1.1" },
+            { rule: "Custom components have proper ARIA roles", status: "required", wcag: "4.1.2" },
+            { rule: "Status messages use aria-live regions", status: "required", wcag: "4.1.3" },
+          ],
+        },
+      ],
+    };
+
+    artifacts.push(
+      this.createArtifact(
+        ArtifactType.Specification,
+        "docs/accessibility-audit.json",
+        JSON.stringify(auditChecklist, null, 2),
+        "WCAG 2.1 AA accessibility audit checklist"
+      )
+    );
+
+    // Accessible component utilities
+    const a11yUtils = `/**
+ * Accessibility utility hooks and helpers
+ */
+
+import { useEffect, useRef, useCallback } from "react";
+
+/** Trap focus within a container (for modals and dialogs) */
+export function useFocusTrap(active: boolean) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!active || !containerRef.current) return;
+
+    const container = containerRef.current;
+    const focusable = container.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key !== "Tab") return;
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last?.focus(); }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first?.focus(); }
+      }
+    }
+
+    container.addEventListener("keydown", handleKeyDown);
+    first?.focus();
+
+    return () => container.removeEventListener("keydown", handleKeyDown);
+  }, [active]);
+
+  return containerRef;
+}
+
+/** Announce a message to screen readers via aria-live */
+export function useAnnounce() {
+  const announce = useCallback((message: string, priority: "polite" | "assertive" = "polite") => {
+    const el = document.createElement("div");
+    el.setAttribute("aria-live", priority);
+    el.setAttribute("aria-atomic", "true");
+    el.setAttribute("role", priority === "assertive" ? "alert" : "status");
+    el.className = "sr-only";
+    el.textContent = message;
+    document.body.appendChild(el);
+    setTimeout(() => document.body.removeChild(el), 1000);
+  }, []);
+
+  return announce;
+}
+
+/** Hook to manage roving tabindex for composite widgets (tabs, toolbars, etc.) */
+export function useRovingTabIndex(itemCount: number) {
+  const activeIndex = useRef(0);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      let newIndex = activeIndex.current;
+      if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+        e.preventDefault();
+        newIndex = (activeIndex.current + 1) % itemCount;
+      } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+        e.preventDefault();
+        newIndex = (activeIndex.current - 1 + itemCount) % itemCount;
+      } else if (e.key === "Home") {
+        e.preventDefault();
+        newIndex = 0;
+      } else if (e.key === "End") {
+        e.preventDefault();
+        newIndex = itemCount - 1;
+      }
+      activeIndex.current = newIndex;
+    },
+    [itemCount]
+  );
+
+  return { activeIndex, handleKeyDown };
+}
+`;
+
+    artifacts.push(
+      this.createArtifact(
+        ArtifactType.SourceCode,
+        "src/client/utils/a11y.ts",
+        a11yUtils,
+        "Accessibility utility hooks: focus trap, screen reader announcements, roving tabindex"
+      )
+    );
+
+    // ── App Implementation ─────────────────────────────────────────
 
     // App entry point
     artifacts.push(
@@ -292,7 +614,7 @@ export class ErrorBoundary extends Component<Props, State> {
       )
     );
 
-    this.log(`Generated ${artifacts.length} frontend source files`);
+    this.log(`Generated ${artifacts.length} frontend source files (including design system and a11y utilities)`);
     return artifacts;
   }
 }

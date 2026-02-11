@@ -72,7 +72,7 @@ async function main() {
 
 function printUsage(): void {
   console.log(`
-econ — A team of 13 AI agents that ship any web app
+econ — A team of 9 AI agents that ship any web app
 
 USAGE
   econ                                Run with demo project (TaskFlow)

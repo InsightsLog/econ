@@ -3,16 +3,12 @@ export enum AgentRole {
   TeamLead = "team-lead",
   ProductManager = "product-manager",
   Architect = "architect",
-  UIDesigner = "ui-designer",
   FrontendDev = "frontend-dev",
   BackendDev = "backend-dev",
   DatabaseEngineer = "database-engineer",
-  APIDesigner = "api-designer",
   QAEngineer = "qa-engineer",
-  SecurityAuditor = "security-auditor",
   DevOps = "devops",
   TechnicalWriter = "technical-writer",
-  AccessibilitySpecialist = "accessibility-specialist",
 }
 
 /** A discrete unit of work that an agent can perform */
@@ -126,10 +122,8 @@ export interface ArchitectureDecision {
 export enum ProjectPhase {
   Requirements = "requirements",
   Architecture = "architecture",
-  Design = "design",
   Implementation = "implementation",
   Testing = "testing",
-  Security = "security",
   Documentation = "documentation",
   Deployment = "deployment",
   Complete = "complete",

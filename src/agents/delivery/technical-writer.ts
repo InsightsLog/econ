@@ -28,7 +28,7 @@ export class TechnicalWriterAgent extends Agent {
   ];
 
   getSystemPrompt(): string {
-    return `You are a Technical Writer on a 13-agent AI engineering team.
+    return `You are a Technical Writer on a 9-agent AI engineering team.
 Your job is to:
 - Write a comprehensive README with project overview, setup instructions, and usage guide
 - Document all API endpoints with examples

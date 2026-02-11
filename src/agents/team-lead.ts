@@ -32,12 +32,12 @@ export class TeamLeadAgent extends Agent {
   ];
 
   getSystemPrompt(): string {
-    return `You are the Team Lead of a 13-agent AI engineering team that ships web applications.
+    return `You are the Team Lead of a 9-agent AI engineering team that ships web applications.
 Your job is to:
 - Break down a project spec into concrete, actionable tasks
 - Assign each task to the right specialist agent
 - Manage dependencies between tasks so nothing is blocked unnecessarily
-- Drive the project through phases: requirements → architecture → design → implementation → testing → security → docs → deployment
+- Drive the project through phases: requirements → architecture → implementation → testing → docs → deployment
 - Escalate or unblock issues when agents get stuck
 - Ensure the final output is a complete, shippable web application`;
   }
@@ -90,20 +90,7 @@ Your job is to:
       priority: Priority.Critical,
     });
 
-    // Phase 3: API + DB design (parallel)
-    const apiId = id();
-    tasks.push({
-      id: apiId,
-      title: "Design API contracts",
-      description:
-        "Define all API endpoints, request/response schemas, authentication flow, and error handling",
-      assignee: AgentRole.APIDesigner,
-      dependencies: [archId],
-      status: TaskStatus.Pending,
-      artifacts: [],
-      priority: Priority.High,
-    });
-
+    // Phase 3: Database design
     const dbId = id();
     tasks.push({
       id: dbId,
@@ -117,29 +104,15 @@ Your job is to:
       priority: Priority.High,
     });
 
-    // Phase 4: UI Design
-    const uiId = id();
-    tasks.push({
-      id: uiId,
-      title: "Design UI components and layouts",
-      description:
-        "Create component hierarchy, design tokens, responsive layouts, and interaction patterns",
-      assignee: AgentRole.UIDesigner,
-      dependencies: [reqId],
-      status: TaskStatus.Pending,
-      artifacts: [],
-      priority: Priority.High,
-    });
-
-    // Phase 5: Implementation (parallel frontend + backend)
+    // Phase 4: Implementation (parallel frontend + backend)
     const backendId = id();
     tasks.push({
       id: backendId,
       title: "Implement backend services",
       description:
-        "Build server, routes, middleware, business logic, and database integration",
+        "Design API contracts, build server, routes, middleware, business logic, database integration, and security hardening",
       assignee: AgentRole.BackendDev,
-      dependencies: [apiId, dbId],
+      dependencies: [archId, dbId],
       status: TaskStatus.Pending,
       artifacts: [],
       priority: Priority.Critical,
@@ -150,29 +123,15 @@ Your job is to:
       id: frontendId,
       title: "Implement frontend application",
       description:
-        "Build pages, components, state management, API integration, and routing",
+        "Create design system, build pages, components, state management, API integration, routing, and accessibility utilities",
       assignee: AgentRole.FrontendDev,
-      dependencies: [uiId, apiId],
+      dependencies: [archId],
       status: TaskStatus.Pending,
       artifacts: [],
       priority: Priority.Critical,
     });
 
-    // Phase 6: Accessibility
-    const a11yId = id();
-    tasks.push({
-      id: a11yId,
-      title: "Accessibility audit and fixes",
-      description:
-        "Review all components for WCAG 2.1 AA compliance, add ARIA labels, keyboard navigation, screen reader support",
-      assignee: AgentRole.AccessibilitySpecialist,
-      dependencies: [frontendId],
-      status: TaskStatus.Pending,
-      artifacts: [],
-      priority: Priority.High,
-    });
-
-    // Phase 7: Testing
+    // Phase 5: Testing
     const qaId = id();
     tasks.push({
       id: qaId,
@@ -186,21 +145,7 @@ Your job is to:
       priority: Priority.High,
     });
 
-    // Phase 8: Security
-    const secId = id();
-    tasks.push({
-      id: secId,
-      title: "Security audit",
-      description:
-        "Review code for OWASP Top 10 vulnerabilities, check auth flows, validate input sanitization, review dependencies",
-      assignee: AgentRole.SecurityAuditor,
-      dependencies: [frontendId, backendId],
-      status: TaskStatus.Pending,
-      artifacts: [],
-      priority: Priority.Critical,
-    });
-
-    // Phase 9: DevOps
+    // Phase 6: DevOps
     const devopsId = id();
     tasks.push({
       id: devopsId,
@@ -208,13 +153,13 @@ Your job is to:
       description:
         "Create Dockerfile, CI/CD pipeline, environment configs, and deployment scripts",
       assignee: AgentRole.DevOps,
-      dependencies: [qaId, secId],
+      dependencies: [qaId],
       status: TaskStatus.Pending,
       artifacts: [],
       priority: Priority.High,
     });
 
-    // Phase 10: Documentation
+    // Phase 7: Documentation
     const docsId = id();
     tasks.push({
       id: docsId,
@@ -222,7 +167,7 @@ Your job is to:
       description:
         "Generate README, API documentation, setup guide, architecture docs, and contributing guide",
       assignee: AgentRole.TechnicalWriter,
-      dependencies: [frontendId, backendId, apiId],
+      dependencies: [frontendId, backendId],
       status: TaskStatus.Pending,
       artifacts: [],
       priority: Priority.Medium,
@@ -257,16 +202,13 @@ Your job is to:
 
     if (!done(AgentRole.ProductManager)) return ProjectPhase.Requirements;
     if (!done(AgentRole.Architect)) return ProjectPhase.Architecture;
-    if (!done(AgentRole.UIDesigner)) return ProjectPhase.Design;
     if (
       !done(AgentRole.FrontendDev) ||
       !done(AgentRole.BackendDev) ||
-      !done(AgentRole.DatabaseEngineer) ||
-      !done(AgentRole.APIDesigner)
+      !done(AgentRole.DatabaseEngineer)
     )
       return ProjectPhase.Implementation;
     if (!done(AgentRole.QAEngineer)) return ProjectPhase.Testing;
-    if (!done(AgentRole.SecurityAuditor)) return ProjectPhase.Security;
     if (!done(AgentRole.TechnicalWriter)) return ProjectPhase.Documentation;
     if (!done(AgentRole.DevOps)) return ProjectPhase.Deployment;
     return ProjectPhase.Complete;

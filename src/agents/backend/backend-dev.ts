@@ -8,16 +8,16 @@ import {
 } from "../../core/types";
 
 /**
- * Agent 7: Backend Developer
+ * Agent: Backend Developer
  *
- * Builds the server-side application — Express setup, route handlers,
- * middleware, business logic, and database integration.
+ * Builds the server-side application — API design, Express setup, route handlers,
+ * middleware, business logic, database integration, and security hardening.
  */
 export class BackendDevAgent extends Agent {
   readonly role = AgentRole.BackendDev;
   readonly name = "Backend Developer";
   readonly description =
-    "Implements server routes, middleware, business logic, authentication, and database integration";
+    "Designs API contracts, implements server routes, middleware, business logic, authentication, database integration, and security hardening";
   readonly capabilities = [
     "express-server",
     "route-handlers",
@@ -25,23 +25,267 @@ export class BackendDevAgent extends Agent {
     "authentication",
     "business-logic",
     "database-integration",
+    "endpoint-design",
+    "schema-definition",
+    "openapi-spec",
+    "error-codes",
+    "versioning",
+    "pagination",
+    "owasp-top-10",
+    "auth-review",
+    "input-validation",
+    "dependency-audit",
+    "security-headers",
+    "csrf-protection",
   ];
 
   getSystemPrompt(): string {
-    return `You are a senior Backend Developer on a 13-agent AI engineering team.
+    return `You are a senior Backend Developer on a 9-agent AI engineering team.
 Your job is to:
+- Design RESTful API endpoints and produce an OpenAPI specification
+- Define shared API types for frontend/backend contracts
 - Set up the Express server with proper middleware chain
-- Implement RESTful route handlers based on the API Designer's contracts
+- Implement RESTful route handlers
 - Build the authentication and authorization layer (JWT)
 - Implement business logic in a service layer
 - Integrate with the database models
 - Handle errors consistently with proper HTTP status codes
-- Implement request validation and sanitization`;
+- Implement request validation and sanitization
+- Review code for OWASP Top 10 vulnerabilities
+- Audit authentication flows and produce a security report with remediation guidance`;
   }
 
   async execute(task: Task, state: ProjectState): Promise<Artifact[]> {
     this.log("Implementing backend services...");
     const artifacts: Artifact[] = [];
+
+    // ── API Design (absorbed from API Designer) ────────────────────
+
+    const apiSpec = {
+      openapi: "3.0.3",
+      info: {
+        title: `${state.spec.name} API`,
+        version: "1.0.0",
+        description: state.spec.description,
+      },
+      servers: [
+        { url: "/api", description: "API base path" },
+      ],
+      paths: {
+        "/auth/register": {
+          post: {
+            summary: "Register a new user",
+            tags: ["Authentication"],
+            requestBody: {
+              required: true,
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    required: ["email", "password", "name"],
+                    properties: {
+                      email: { type: "string", format: "email" },
+                      password: { type: "string", minLength: 8 },
+                      name: { type: "string", minLength: 1 },
+                    },
+                  },
+                },
+              },
+            },
+            responses: {
+              "201": { description: "User created successfully" },
+              "400": { description: "Validation error" },
+              "409": { description: "Email already registered" },
+            },
+          },
+        },
+        "/auth/login": {
+          post: {
+            summary: "Authenticate user",
+            tags: ["Authentication"],
+            requestBody: {
+              required: true,
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    required: ["email", "password"],
+                    properties: {
+                      email: { type: "string", format: "email" },
+                      password: { type: "string" },
+                    },
+                  },
+                },
+              },
+            },
+            responses: {
+              "200": { description: "Authentication successful, returns tokens" },
+              "401": { description: "Invalid credentials" },
+            },
+          },
+        },
+        "/auth/refresh": {
+          post: {
+            summary: "Refresh access token",
+            tags: ["Authentication"],
+            requestBody: {
+              required: true,
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    required: ["refreshToken"],
+                    properties: {
+                      refreshToken: { type: "string" },
+                    },
+                  },
+                },
+              },
+            },
+            responses: {
+              "200": { description: "New token pair" },
+              "401": { description: "Invalid refresh token" },
+            },
+          },
+        },
+        "/users/me": {
+          get: {
+            summary: "Get current user profile",
+            tags: ["Users"],
+            security: [{ bearerAuth: [] }],
+            responses: {
+              "200": { description: "User profile" },
+              "401": { description: "Not authenticated" },
+            },
+          },
+          put: {
+            summary: "Update current user profile",
+            tags: ["Users"],
+            security: [{ bearerAuth: [] }],
+            requestBody: {
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      name: { type: "string" },
+                      email: { type: "string", format: "email" },
+                    },
+                  },
+                },
+              },
+            },
+            responses: {
+              "200": { description: "Updated profile" },
+              "401": { description: "Not authenticated" },
+            },
+          },
+        },
+      },
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: "http",
+            scheme: "bearer",
+            bearerFormat: "JWT",
+          },
+        },
+        schemas: {
+          Error: {
+            type: "object",
+            properties: {
+              error: {
+                type: "object",
+                properties: {
+                  message: { type: "string" },
+                  status: { type: "integer" },
+                  code: { type: "string" },
+                },
+              },
+            },
+          },
+          PaginatedResponse: {
+            type: "object",
+            properties: {
+              data: { type: "array", items: {} },
+              pagination: {
+                type: "object",
+                properties: {
+                  page: { type: "integer" },
+                  perPage: { type: "integer" },
+                  total: { type: "integer" },
+                  totalPages: { type: "integer" },
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
+    artifacts.push(
+      this.createArtifact(
+        ArtifactType.Specification,
+        "docs/openapi.json",
+        JSON.stringify(apiSpec, null, 2),
+        "OpenAPI 3.0 specification for all API endpoints"
+      )
+    );
+
+    // Shared types for frontend/backend
+    const sharedTypes = `/** Shared API types — used by both client and server */
+
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+}
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  name: string;
+  avatarUrl?: string;
+  role: string;
+  createdAt: string;
+}
+
+export interface ApiErrorResponse {
+  error: {
+    message: string;
+    status: number;
+    code?: string;
+  };
+}
+
+export interface PaginationParams {
+  page?: number;
+  perPage?: number;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    perPage: number;
+    total: number;
+    totalPages: number;
+  };
+}
+`;
+
+    artifacts.push(
+      this.createArtifact(
+        ArtifactType.SourceCode,
+        "src/shared/api-types.ts",
+        sharedTypes,
+        "Shared TypeScript types for API contracts between frontend and backend"
+      )
+    );
+
+    // ── Server Implementation ──────────────────────────────────────
 
     // Server entry point
     artifacts.push(
@@ -432,7 +676,152 @@ export function rateLimiter(req: Request, _res: Response, next: NextFunction) {
       )
     );
 
-    this.log(`Generated ${artifacts.length} backend source files`);
+    // ── Security Audit (absorbed from Security Auditor) ────────────
+
+    const securityReport = {
+      project: state.spec.name,
+      auditDate: new Date().toISOString(),
+      summary: {
+        totalFindings: 5,
+        critical: 0,
+        high: 2,
+        medium: 2,
+        low: 1,
+        informational: 0,
+      },
+      checklist: [
+        {
+          category: "A01:2021 — Broken Access Control",
+          checks: [
+            { item: "Authentication required on protected routes", status: "pass", notes: "authenticate middleware applied to protected route groups" },
+            { item: "JWT tokens validated on every request", status: "pass", notes: "Token signature verification in auth middleware" },
+            { item: "CORS configured with specific origins", status: "pass", notes: "CORS origin set from environment variable" },
+          ],
+        },
+        {
+          category: "A02:2021 — Cryptographic Failures",
+          checks: [
+            { item: "Passwords hashed with bcrypt/argon2", status: "recommendation", notes: "Implement bcrypt hashing before production deployment" },
+            { item: "JWT secret externalized", status: "pass", notes: "JWT_SECRET loaded from environment variable" },
+            { item: "HTTPS enforced", status: "recommendation", notes: "Add HSTS header and HTTPS redirect in production" },
+          ],
+        },
+        {
+          category: "A03:2021 — Injection",
+          checks: [
+            { item: "Parameterized queries for database access", status: "pass", notes: "Using parameterized queries in models" },
+            { item: "Input validation on all endpoints", status: "recommendation", notes: "Add request schema validation (e.g., zod/joi)" },
+            { item: "Output encoding for XSS prevention", status: "pass", notes: "React's JSX auto-escapes by default" },
+          ],
+        },
+        {
+          category: "A04:2021 — Insecure Design",
+          checks: [
+            { item: "Rate limiting implemented", status: "pass", notes: "Rate limiter middleware with 100 req/15min window" },
+            { item: "Account lockout after failed attempts", status: "recommendation", notes: "Implement progressive delays on login failures" },
+          ],
+        },
+        {
+          category: "A05:2021 — Security Misconfiguration",
+          checks: [
+            { item: "Helmet.js security headers", status: "pass", notes: "Helmet middleware configured" },
+            { item: "Error messages don't leak internals", status: "pass", notes: "Generic error messages in production via errorHandler" },
+            { item: "Debug mode disabled in production", status: "pass", notes: "No debug flags in production config" },
+          ],
+        },
+        {
+          category: "A07:2021 — Cross-Site Scripting (XSS)",
+          checks: [
+            { item: "React auto-escaping in JSX", status: "pass", notes: "Framework default provides protection" },
+            { item: "No dangerouslySetInnerHTML usage", status: "pass", notes: "No unsafe HTML rendering found" },
+            { item: "Content-Security-Policy header", status: "recommendation", notes: "Add CSP header via Helmet configuration" },
+          ],
+        },
+        {
+          category: "A09:2021 — Security Logging & Monitoring",
+          checks: [
+            { item: "Request logging in place", status: "pass", notes: "requestLogger middleware logs all requests" },
+            { item: "Audit log table for critical actions", status: "pass", notes: "audit_log table in database schema" },
+            { item: "Failed auth attempts logged", status: "recommendation", notes: "Add specific logging for failed login attempts" },
+          ],
+        },
+      ],
+      recommendations: [
+        { severity: "high", title: "Add request validation middleware", description: "Use zod or joi to validate request bodies against schemas before they reach route handlers" },
+        { severity: "high", title: "Implement bcrypt password hashing", description: "Replace placeholder hash with bcrypt (cost factor 12+) for password storage" },
+        { severity: "medium", title: "Add Content-Security-Policy header", description: "Configure CSP via Helmet to prevent XSS and data injection attacks" },
+        { severity: "medium", title: "Implement account lockout", description: "Add progressive delays or temporary lockout after 5 failed login attempts" },
+        { severity: "low", title: "Add HTTPS redirect", description: "Redirect all HTTP traffic to HTTPS in production environment" },
+      ],
+    };
+
+    artifacts.push(
+      this.createArtifact(
+        ArtifactType.Documentation,
+        "docs/security-report.json",
+        JSON.stringify(securityReport, null, 2),
+        "Security audit report with OWASP Top 10 checklist and recommendations"
+      )
+    );
+
+    // Security configuration guide
+    artifacts.push(
+      this.createArtifact(
+        ArtifactType.Config,
+        "docs/security-config.md",
+        `# Security Configuration Guide
+
+## Production Checklist
+
+### Environment Variables (Required)
+\`\`\`
+JWT_SECRET=<generate-256-bit-random-key>
+CORS_ORIGIN=https://yourdomain.com
+NODE_ENV=production
+\`\`\`
+
+### Helmet Configuration
+\`\`\`typescript
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      frameAncestors: ["'none'"],
+    },
+  },
+  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+}));
+\`\`\`
+
+### Password Hashing
+\`\`\`typescript
+import bcrypt from "bcrypt";
+const SALT_ROUNDS = 12;
+const hash = await bcrypt.hash(password, SALT_ROUNDS);
+const isValid = await bcrypt.compare(password, hash);
+\`\`\`
+
+### Request Validation
+\`\`\`typescript
+import { z } from "zod";
+const registerSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+  name: z.string().min(1).max(255),
+});
+\`\`\`
+`,
+        "Security configuration guide for production deployment"
+      )
+    );
+
+    this.log(`Generated ${artifacts.length} backend source files (including API spec and security report)`);
     return artifacts;
   }
 }

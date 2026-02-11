@@ -19,14 +19,10 @@ import { TeamLeadAgent } from "../agents/team-lead";
 import {
   ProductManagerAgent,
   ArchitectAgent,
-  UIDesignerAgent,
   FrontendDevAgent,
-  AccessibilityAgent,
   BackendDevAgent,
   DatabaseEngineerAgent,
-  APIDesignerAgent,
   QAEngineerAgent,
-  SecurityAuditorAgent,
   DevOpsAgent,
   TechnicalWriterAgent,
 } from "../agents";
@@ -53,7 +49,7 @@ export interface TeamConfig {
 }
 
 /**
- * The team runner. Assembles the 13 agents, wires up tools,
+ * The team runner. Assembles the 9 agents, wires up tools,
  * memory, skills, hooks, MCP, event bus, and knowledge graph,
  * then orchestrates execution through all project phases.
  */
@@ -121,14 +117,10 @@ export class AgentTeam {
       this.teamLead,
       new ProductManagerAgent(),
       new ArchitectAgent(),
-      new UIDesignerAgent(),
       new FrontendDevAgent(),
-      new AccessibilityAgent(),
       new BackendDevAgent(),
       new DatabaseEngineerAgent(),
-      new APIDesignerAgent(),
       new QAEngineerAgent(),
-      new SecurityAuditorAgent(),
       new DevOpsAgent(),
       new TechnicalWriterAgent(),
     ];
@@ -216,7 +208,7 @@ export class AgentTeam {
   async run(): Promise<ProjectState> {
     console.log("\n\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557");
     console.log("\u2551           econ \u2014 AI Agent Team Builder              \u2551");
-    console.log("\u2551           13 agents, 1 mission: ship it             \u2551");
+    console.log("\u2551            9 agents, 1 mission: ship it             \u2551");
     console.log("\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255D\n");
 
     console.log(`Project: ${this.state.spec.name}`);
