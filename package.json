@@ -1,0 +1,24 @@
+{
+  "name": "econ",
+  "version": "1.0.0",
+  "description": "A team of 13 AI agents that ship any web app",
+  "main": "dist/index.js",
+  "bin": {
+    "econ": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli.js",
+    "dev": "ts-node src/cli.ts",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": ["ai", "agents", "web-app", "team", "automation"],
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.11.0"
+  },
+  "dependencies": {
+    "ts-node": "^10.9.0"
+  }
+}
