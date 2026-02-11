@@ -1,0 +1,13 @@
+export { TeamLeadAgent } from "./team-lead";
+export { ProductManagerAgent } from "./planning/product-manager";
+export { ArchitectAgent } from "./planning/architect";
+export { UIDesignerAgent } from "./frontend/ui-designer";
+export { FrontendDevAgent } from "./frontend/frontend-dev";
+export { AccessibilityAgent } from "./frontend/accessibility";
+export { BackendDevAgent } from "./backend/backend-dev";
+export { DatabaseEngineerAgent } from "./backend/database-engineer";
+export { APIDesignerAgent } from "./backend/api-designer";
+export { QAEngineerAgent } from "./quality/qa-engineer";
+export { SecurityAuditorAgent } from "./quality/security-auditor";
+export { DevOpsAgent } from "./delivery/devops";
+export { TechnicalWriterAgent } from "./delivery/technical-writer";
